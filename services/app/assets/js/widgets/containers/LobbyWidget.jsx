@@ -318,74 +318,83 @@ const ActiveGames = ({ games }) => {
 
 const GameContainers = ({
  activeGames, completedGames, liveTournaments, completedTournaments,
-}) => (
-  <div className="p-0">
-    <nav>
-      <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
-        <a
-          className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
-          id="lobby-tab"
-          data-toggle="tab"
-          href="#lobby"
-          role="tab"
-          aria-controls="lobby"
-          aria-selected="true"
+}) => {
+  const navElements = [
+    {
+      id: 'lobby',
+      name: 'Lobby',
+    },
+    {
+      id: 'tournaments',
+      name: 'Tournaments',
+    },
+    {
+      id: 'completedGames',
+      name: 'Completed Games',
+    },
+  ];
+  const urlHash = window.location.hash.slice(1);
+  const contentLobbyClass = urlHash === 'lobby' ? 'tab-pane fade show active' : 'tab-pane fade';
+  const contentTournamentsClass = urlHash === 'tournaments' ? 'tab-pane fade show active' : 'tab-pane fade';
+  const contentCompletedGamesClass = urlHash === 'completedGames' ? 'tab-pane fade show active' : 'tab-pane fade';
+  return (
+    <div className="p-0">
+      <nav>
+        <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+          {navElements.map(navEl => {
+            const active = urlHash === navEl.id ? 'active' : '';
+            const classNavEl = `nav-item nav-link ${active} text-uppercase rounded-0 text-black font-weight-bold p-3`;
+            return (
+              <a
+                className={classNavEl}
+                id={`${navEl.id}-tab"`}
+                data-toggle="tab"
+                href={`#${navEl.id}`}
+                key={navEl.id}
+                role="tab"
+                aria-controls={navEl.id}
+                aria-selected="true"
+                onClick={event => {
+                  event.preventDefault();
+                  window.location.hash = `#${navEl.id}`;
+                }}
+              >
+                {navEl.name}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
+      <div className="tab-content" id="nav-tabContent">
+        <div
+          className={contentLobbyClass}
+          id="lobby"
+          role="tabpanel"
+          aria-labelledby="lobby-tab"
         >
-          Lobby
-        </a>
-        <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
-          id="tournaments-tab"
-          data-toggle="tab"
-          href="#tournaments"
-          role="tab"
-          aria-controls="tournaments"
-          aria-selected="false"
+          <ActiveGames games={activeGames} />
+        </div>
+        <div
+          className={contentTournamentsClass}
+          id="tournaments"
+          role="tabpanel"
+          aria-labelledby="tournaments-tab"
         >
-          Tournaments
-        </a>
-        <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
-          id="completedGames-tab"
-          data-toggle="tab"
-          href="#completedGames"
-          role="tab"
-          aria-controls="completedGames"
-          aria-selected="false"
+          <LiveTournaments tournaments={liveTournaments} />
+          <CompletedTournaments tournaments={completedTournaments} />
+        </div>
+        <div
+          className={contentCompletedGamesClass}
+          id="completedGames"
+          role="tabpanel"
+          aria-labelledby="completedGames-tab"
         >
-          Completed Games
-        </a>
-      </div>
-    </nav>
-    <div className="tab-content" id="nav-tabContent">
-      <div
-        className="tab-pane fade show active"
-        id="lobby"
-        role="tabpanel"
-        aria-labelledby="lobby-tab"
-      >
-        <ActiveGames games={activeGames} />
-      </div>
-      <div
-        className="tab-pane fade"
-        id="tournaments"
-        role="tabpanel"
-        aria-labelledby="tournaments-tab"
-      >
-        <LiveTournaments tournaments={liveTournaments} />
-        <CompletedTournaments tournaments={completedTournaments} />
-      </div>
-      <div
-        className="tab-pane fade"
-        id="completedGames"
-        role="tabpanel"
-        aria-labelledby="completedGames-tab"
-      >
-        <CompletedGames games={completedGames} />
+          <CompletedGames games={completedGames} />
+        </div>
       </div>
     </div>
-  </div>
 );
+};
 
 const renderModal = (show, handleCloseModal) => (
   <Modal show={show} onHide={handleCloseModal}>
